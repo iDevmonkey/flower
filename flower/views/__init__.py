@@ -13,6 +13,12 @@ from ..utils import template, bugreport, prepend_url
 
 
 class BaseHandler(tornado.web.RequestHandler):
+
+    def set_default_headers(self):
+        self.set_header("Access-Control-Allow-Origin", "*")
+        self.set_header("Access-Control-Allow-Headers", "x-requested-with")
+        self.set_header('Access-Control-Allow-Methods', 'POST, GET, OPTIONS')
+
     def render(self, *args, **kwargs):
         functions = inspect.getmembers(template, inspect.isfunction)
         assert not set(map(lambda x: x[0], functions)) & set(kwargs.keys())
