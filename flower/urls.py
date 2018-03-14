@@ -54,6 +54,7 @@ handlers = [
     (r"/api/task/apply/(.+)", tasks.TaskApply),
     (r"/api/task/async-apply/(.+)", tasks.TaskAsyncApply),
     (r"/api/task/send-task/(.+)", tasks.TaskSend),
+    (r"/api/task/retry/(.+)", tasks.TaskRetry),
     (r"/api/task/result/(.+)", tasks.TaskResult),
     (r"/api/task/abort/(.+)", tasks.TaskAbort),
     (r"/api/task/timeout/(.+)", control.TaskTimout),

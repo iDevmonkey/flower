@@ -602,3 +602,64 @@ Get a task info
         if task.worker is not None:
             response['worker'] = task.worker.hostname
         self.write(response)
+
+class TaskRetry(BaseTaskHandler):
+    @web.authenticated
+    def post(self, taskid):
+        """
+Execute a task by taskid (doesn't require task sources)
+
+**Example request**:
+
+.. sourcecode:: http
+
+  POST /api/task/send-task/tasks.add HTTP/1.1
+  Accept: application/json
+  Accept-Encoding: gzip, deflate, compress
+  Content-Length: 16
+  Content-Type: application/json; charset=utf-8
+  Host: localhost:5555
+
+  {
+      "args": [1, 2]
+  }
+
+**Example response**:
+
+.. sourcecode:: http
+
+  HTTP/1.1 200 OK
+  Content-Length: 71
+  Content-Type: application/json; charset=UTF-8
+
+  {
+      "state": "SUCCESS",
+      "task-id": "c60be250-fe52-48df-befb-ac66174076e6"
+  }
+
+:query args: a list of arguments
+:query kwargs: a dictionary of arguments
+:reqheader Authorization: optional OAuth token to authenticate
+:statuscode 200: no error
+:statuscode 401: unauthorized request
+:statuscode 404: unknown task
+        """
+        task = tasks.get_task_by_id(self.application.events, taskid)
+        if not task:
+            raise HTTPError(404, "Unknown task '%s'" % taskid)
+
+        args = eval(task.args)
+        kwargs = eval(task.kwargs)
+
+        logger.debug("Invoking task '%s(%s)' with '%s' and '%s'",
+                     task.name, taskid, args, kwargs)
+        #delete
+        # tasks.del_task_by_id(self.application.events, taskid)
+
+        result = self.capp.send_task(
+            task.name, args=args, kwargs=kwargs)
+        response = {'task-id': result.task_id}
+        if self.backend_configured(result):
+            response.update(state=result.state)
+        self.write(response)
+

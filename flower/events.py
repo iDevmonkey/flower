@@ -135,3 +135,10 @@ class Events(threading.Thread):
     def on_event(self, event):
         # Call EventsState.event in ioloop thread to avoid synchronization
         self.io_loop.add_callback(partial(self.state.event, event))
+
+    def save(self):
+        if self.persistent:
+            logger.debug("Saving state to '%s'...", self.db)
+            state = shelve.open(self.db)
+            state['events'] = self.state
+            state.close()

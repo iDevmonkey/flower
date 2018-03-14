@@ -73,6 +73,10 @@ def get_task_by_id(events, task_id):
             task._fields = _fields
         return task
 
+def del_task_by_id(events, task_id):
+    events.state.tasks.pop(task_id)
+    events.save()
+
 
 def as_dict(task):
     # as_dict is new in Celery 3.1.7
