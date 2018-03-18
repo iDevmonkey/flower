@@ -46,6 +46,9 @@ class EventsState(State):
         cls = getattr(api.events, classname, None)
         if cls:
             cls.send_message(event)
+            # save
+            # if (self.e_event() != None and isinstance(self.e_event(), Events)):
+            #     self.e_event().save()
 
         # Save the event
         super(EventsState, self).event(event)
